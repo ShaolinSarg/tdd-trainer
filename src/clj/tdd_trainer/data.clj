@@ -7,10 +7,11 @@
   [session session-id snapshot]
 
   (let [snapshots (:snapshots session)]
-    {:session-id session-id :snapshots (conj snapshots snapshot)})
-)
+    (update session :snapshots conj snapshot)))
+
 
 (defn update-session-data
   "updates the session data store"
   [session-id snapshot]
+
   (reset! session-data (add-snapshot-to-session @session-data session-id snapshot)))

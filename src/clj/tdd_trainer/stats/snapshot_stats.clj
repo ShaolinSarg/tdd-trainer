@@ -38,12 +38,16 @@
 (defn average-snapshot-gap
   "returns the average gap inbetween snapshots"
   [gaps]
-
-  (double (/ (reduce + gaps) (count gaps))))
+  (if (empty? gaps)
+    "no data" 
+    (double (/ (reduce + gaps) (count gaps)))))
 
 (defn gen-stat-summary
   "generates the map containing all of the required stats"
-  [session-id start snapshots]
-  (let [gaps (snapshot-gaps start snapshots)
+  [session]
+  (let [start (:start-time session)
+        snapshots (:snapshots session)
+        gaps (snapshot-gaps start snapshots)
         ave-save-time (average-snapshot-gap gaps)]
-    {:average-save-time ave-save-time}))
+    {:average-save-time ave-save-time
+     :gaps gaps}))
