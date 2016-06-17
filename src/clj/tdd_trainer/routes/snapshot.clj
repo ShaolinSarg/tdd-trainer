@@ -12,7 +12,7 @@
   [{:keys [session-id start-time snapshots]}]
   {:sessionId session-id
    :startTime (f/unparse json-date-formatter start-time)
-   :snapshots snapshots})
+   :snapshots (map #(update % :timestamp (partial f/unparse json-date-formatter)) snapshots)})
 
 (defroutes snapshot-routes 
   (POST "/session" [timestamp]
@@ -23,11 +23,13 @@
   (GET "/session/:session-id/stats" [session-id]
        (let [stats (gen-stat-summary @d/session-data)]
          (response/ok stats)))
+
   
   (GET "/session/:session-id/snapshot" [session-id] (response/ok (format-session-data @d/session-data)))
+
   (POST "/session/:session-id/snapshot" [session-id timestamp failingTestCount failingTestNames]
         (do
-          (d/update-session-data session-id {:timestamp timestamp
+          (d/update-session-data session-id {:timestamp (f/parse json-date-formatter timestamp)
                                              :failing-test-count failingTestCount
                                              :failing-test-names failingTestNames})
           (response/ok))))
