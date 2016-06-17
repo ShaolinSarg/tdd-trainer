@@ -9,4 +9,4 @@
 (deftest creating-session-tests
   (facts "about `create-session`"
     (fact "it must return a map with a session id"
-      (create-session start-time) => {:session-id 111 :start-time start-time :snapshots[]})))
+      (create-session "2016-04-06 12:14:04") => {:session-id 111 :start-time start-time :snapshots[]})))

@@ -17,7 +17,7 @@
       (is (= 201 (:status response)))))
 
   (testing "post snapshot route"
-    (let [response ((app) (request :post "/session/111/snapshot"))]
+    (let [response ((app) (request :post "/session/111/snapshot" {:timestamp "2016-04-04 14:13:55"}))]
       (is (= 200 (:status response)))))
   
   (testing "get snapshot route"
