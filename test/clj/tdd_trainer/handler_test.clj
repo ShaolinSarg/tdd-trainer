@@ -1,9 +1,15 @@
-(ns tdd-trainer.test.handler
+(ns tdd-trainer.handler-test
   (:require [clojure.test :refer :all]
+            [midje.sweet :refer :all]
             [ring.mock.request :refer :all]
             [tdd-trainer.handler :refer :all]))
 
-(deftest test-app
+(deftest handler-tests
+  (facts "about `/session/:id` route"
+    (fact "it should respond to GET requests with OK"
+      (let [response ((app) (request :get "/session/111"))]
+        (:status response) => 200)))
+
   (testing "main route"
     (let [response ((app) (request :get "/"))]
       (is (= 200 (:status response)))))
@@ -20,10 +26,6 @@
     (let [response ((app) (request :post "/session/111/snapshot" {:timestamp "2016-04-04 14:13:55"}))]
       (is (= 200 (:status response)))))
   
-  (testing "get snapshot route"
-    (let [response ((app) (request :get "/session/111/snapshot"))]
-      (is (= 200 (:status response)))))
-
   (testing "get snapshot route"
     (let [response ((app) (request :get "/session/111/stats"))]
       (is (= 200 (:status response))))))

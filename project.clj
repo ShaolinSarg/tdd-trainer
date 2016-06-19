@@ -45,7 +45,6 @@
              :resource-paths ["env/prod/resources"]}
 
    :dev           [:project/dev :profiles/dev]
-   :test          [:project/test :profiles/test]
 
    :project/dev  {:dependencies [[prone "1.1.1"]
                                  [ring/ring-mock "0.3.0"]
@@ -59,6 +58,4 @@
                   :repl-options {:init-ns user}
                   :injections [(require 'pjstadig.humane-test-output)
                                (pjstadig.humane-test-output/activate!)]}
-   :project/test {:resource-paths ["env/dev/resources" "env/test/resources"]}
-   :profiles/dev {}
-   :profiles/test {}})
+   :profiles/dev {}})

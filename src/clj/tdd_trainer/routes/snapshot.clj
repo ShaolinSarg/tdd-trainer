@@ -9,10 +9,16 @@
 (def json-date-formatter (f/formatters :mysql))
 
 (defn format-session-data
+  "formats the session data for json serialisation"
   [{:keys [session-id start-time snapshots]}]
   {:sessionId session-id
    :startTime (f/unparse json-date-formatter start-time)
-   :snapshots (map #(update % :timestamp (partial f/unparse json-date-formatter)) snapshots)})
+   :snapshots (map (fn [item] {
+                               :timestamp (f/unparse json-date-formatter (:timestamp item))
+                               :failingTestCount (:failing-test-count item)
+                               :failingTestNames (:failing-test-names item)})
+                   snapshots)
+   })
 
 (defroutes snapshot-routes 
   (POST "/session" [timestamp]
@@ -20,17 +26,22 @@
           (reset! d/session-data new-session)
           (response/created (format-session-data new-session))))
   
-  (GET "/session/:session-id/stats" [session-id]
-       (let [stats (gen-stat-summary @d/session-data)]
-         (response/ok stats)))
+  (GET "/session" []
+       (response/ok {:sessions [(str "http://localhost:3000/session/" (:session-id @d/session-data))]}))
 
-  
-  (GET "/session/:session-id/snapshot" [session-id] (response/ok (format-session-data @d/session-data)))
 
+  (GET "/session/:session-id" [session-id] (response/ok (format-session-data @d/session-data)))
+
+    
   (POST "/session/:session-id/snapshot" [session-id timestamp failingTestCount failingTestNames]
         (do
-          (d/update-session-data session-id {:timestamp (f/parse json-date-formatter timestamp)
+          (d/update-session-data session-id {:snapshot-timestamp (f/parse json-date-formatter timestamp)
                                              :failing-test-count failingTestCount
                                              :failing-test-names failingTestNames})
           (response/ok))))
+
+
+  (GET "/session/:session-id/stats" [session-id]
+       (let [stats (gen-stat-summary @d/session-data)]
+         (response/ok stats)))
 
