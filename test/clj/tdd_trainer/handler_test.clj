@@ -10,17 +10,15 @@
       (let [response ((app) (request :get "/session/111"))]
         (:status response) => 200)))
 
-  (testing "main route"
-    (let [response ((app) (request :get "/"))]
-      (is (= 200 (:status response)))))
+  (facts "about `/session` route"
+    (fact "it should respond to POST requests with CREATED"
+      (let [response ((app) (request :post "/session" {:timestamp "2016-04-04 14:13:55"}))]
+        (:status response) => 201)))
 
-  (testing "not-found route"
-    (let [response ((app) (request :get "/invalid"))]
-      (is (= 404 (:status response)))))
-
-  (testing "post session route"
-    (let [response ((app) (request :post "/session"))]
-      (is (= 201 (:status response)))))
+  (facts "about `not-found` routes"
+    (fact "it should return the 404 http status"
+      (let [response ((app) (request :get "/invalid"))]
+        (:status response) => 404)))
 
   (testing "post snapshot route"
     (let [response ((app) (request :post "/session/111/snapshot" {:timestamp "2016-04-04 14:13:55"}))]

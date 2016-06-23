@@ -33,8 +33,11 @@
 
   (facts "about `average-snapshot-gap`"
     (fact "it should return the average snapshot gap"
-      (average-snapshot-gap [12 60 40 120]) => 58.0)))
+      (average-snapshot-gap [12 60 40 120]) => 58.0))
 
+  (facts "about `standard-deviation-gaps`"
+    (fact "it should return the right sd for the gaps"
+      (standard-deviation-gaps [12 60 40 120]) => 34)))
 
 
 (deftest output-tests
