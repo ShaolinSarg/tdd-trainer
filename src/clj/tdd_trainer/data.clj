@@ -2,6 +2,8 @@
 
 (def session-data (atom nil))
 
+(def change-list (atom #{}))
+
 (defn add-snapshot-to-session
   "adds a snapshot to the given tdd session"
   [session session-id snapshot]

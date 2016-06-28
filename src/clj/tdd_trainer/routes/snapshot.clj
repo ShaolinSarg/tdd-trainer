@@ -2,6 +2,7 @@
   (:require [tdd-trainer.session :refer :all]
             [tdd-trainer.data :as d]
             [tdd-trainer.stats.snapshot-stats :refer :all]
+            [tdd-trainer.watcher.file-watcher :refer :all]
             [compojure.core :refer [defroutes POST GET]]
             [ring.util.http-response :as response]
             [clj-time.format :as f]))
@@ -10,21 +11,24 @@
 
 (defn format-session-data
   "formats the session data for json serialisation"
-  [{:keys [session-id start-time project-root snapshots]}]
+  [{:keys [session-id start-time project-root watched-file-types snapshots]}]
   {:sessionId session-id
    :startTime (f/unparse json-date-formatter start-time)
    :projectBase project-root
+   :watchedFiles watched-file-types
    :snapshots (map (fn [item] {
-                               :timestamp (f/unparse json-date-formatter (:timestamp item))
+                               :timestamp (f/unparse json-date-formatter (:snapshot-timestamp item))
                                :failingTestCount (:failing-test-count item)
-                               :failingTestNames (:failing-test-names item)})
+                               :failingTestNames (:failing-test-names item)
+                               :changedFiles (:changed-files item)})
                    snapshots)
    })
 
 (defroutes snapshot-routes 
-  (POST "/session" [timestamp projectBase]
-        (let [new-session (create-session timestamp projectBase)]
+  (POST "/session" [timestamp projectBase watchedFiles]
+        (let [new-session (create-session timestamp projectBase watchedFiles)]
           (reset! d/session-data new-session)
+          (watch-project d/change-list projectBase (set watchedFiles))
           (response/created (format-session-data new-session))))
   
   (GET "/session" []
@@ -39,7 +43,9 @@
         (do
           (d/update-session-data session-id {:snapshot-timestamp (f/parse json-date-formatter timestamp)
                                              :failing-test-count failingTestCount
-                                             :failing-test-names failingTestNames})
+                                             :failing-test-names failingTestNames
+                                             :changed-files @d/change-list})
+          (reset! d/change-list #{})
           (response/ok)))
 
 
