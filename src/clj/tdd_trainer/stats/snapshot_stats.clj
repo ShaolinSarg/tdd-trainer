@@ -45,8 +45,13 @@
 (defn standard-deviation-gaps 
   "returns the Standard Deviation of the save gaps"
   [gaps]
-  (let [mean (average-snapshot-gap gaps)]
-    (Math/sqrt (double (/ (reduce (fn [total gap] (+ (* (- gap mean) (- gap mean)) total)) gaps) (count gaps))))))
+  (let [mean (average-snapshot-gap gaps)
+        diffs-squared (map #(let [mean-diff (- % mean)] (* mean-diff mean-diff)) gaps)
+        sum-diffs (reduce + diffs-squared)
+        variance (/ sum-diffs (count gaps))]
+    (->> (Math/sqrt variance)
+         (bigdec)
+         (with-precision 2))))
 
 (defn gen-stat-summary
   "generates the map containing all of the required stats"

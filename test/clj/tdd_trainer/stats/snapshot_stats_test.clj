@@ -33,17 +33,17 @@
 
   (facts "about `average-snapshot-gap`"
     (fact "it should return the average snapshot gap"
-      (average-snapshot-gap [12 60 40 120]) => 58.0))
+      (average-snapshot-gap [12 60 40 120]) => 58.0M))
 
   (facts "about `standard-deviation-gaps`"
     (fact "it should return the right sd for the gaps"
-      (standard-deviation-gaps [12 60 40 120]) => 34)))
+      (standard-deviation-gaps [12 60 40 120]) => 39.65M)))
 
 
 (deftest output-tests
   (facts "about 'gen-stat-summary'"
     (fact "should contain the average save time"
-      (:average-save-time (gen-stat-summary session)) => 58.0)
+      (:average-save-time (gen-stat-summary session)) => 58.0M)
     (fact "should return a suitable message for no snapshots"
       (:average-save-time (gen-stat-summary {:snapshots []})) => "no data")
     (fact "should contain the sequence of save gaps"

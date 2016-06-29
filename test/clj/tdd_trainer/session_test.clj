@@ -9,4 +9,4 @@
 (deftest creating-session-tests
   (facts "about `create-session`"
     (fact "it must return a map with a valid session id"
-      (:session-id (create-session "2016-04-06 12:14:04" "/test/projectDir")) => (roughly 500 500))))
+      (:session-id (create-session "2016-04-06 12:14:04" "/test/projectDir" #{".clj"})) => (roughly 500 500))))
