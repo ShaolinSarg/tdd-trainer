@@ -4,6 +4,8 @@
 
 (def change-list (atom #{}))
 
+(def file-cache (atom {}))
+
 (defn add-snapshot-to-session
   "adds a snapshot to the given tdd session"
   [session session-id snapshot]
