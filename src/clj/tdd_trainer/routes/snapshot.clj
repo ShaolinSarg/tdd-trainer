@@ -28,7 +28,7 @@
   (POST "/session" [timestamp projectBase watchedFiles]
         (let [new-session (create-session timestamp projectBase watchedFiles)]
           (reset! d/session-data new-session)
-          (watch-project d/change-list projectBase (set watchedFiles))
+          (watch-project d/change-list projectBase (set [watchedFiles]))
           (response/created (format-session-data new-session))))
   
   (GET "/session" []
