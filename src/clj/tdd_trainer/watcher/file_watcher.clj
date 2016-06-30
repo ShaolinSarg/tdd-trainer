@@ -7,7 +7,9 @@
   [change-set file-path file-types-to-watch]
   (let [file-ext (clojure.string/join (drop-while #(not= \. %) file-path))]
     (if (some (conj #{} file-ext) file-types-to-watch)
-      (swap! change-set conj file-path)
+      (do
+        (println (str "Adding file: " file-path))
+        (swap! change-set conj file-path))
       @change-set)))
 
 

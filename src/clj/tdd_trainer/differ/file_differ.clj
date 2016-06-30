@@ -15,4 +15,4 @@
 (defn get-previous-version
   "returns the previous version of the file as a colleciton of lines or empty collection if not found"
   [cache filename]
-  (get cache filename []))
+  (get @cache filename []))
