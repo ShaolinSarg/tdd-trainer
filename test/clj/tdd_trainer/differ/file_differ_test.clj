@@ -9,6 +9,11 @@
 
 (def file-cache {"test_file1.clj" file1})
 
+(def old-file1 [nil nil nil "def convert(num: Int): String = ???"])
+(def old-file2 [nil nil nil "def convert(num: Int): String = \"I\""])
+
+
+
 (deftest file-differ-tests
   (facts "about `file-diff`"
     (fact "must return the whole file if it is new"
@@ -22,4 +27,8 @@
 
     (fact "should return the contents of the cached file if found"
       (get-previous-version file-cache "test_file1.clj") => file1))
-)
+
+  (facts "about `reduce-diff`"
+    (fact "it should strip out leading nil values"
+      (reduce-diff old-file1 old-file2) => '(["def convert(num: Int): String = ???"
+                                              "def convert(num: Int): String = \"I\""]))))

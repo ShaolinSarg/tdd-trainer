@@ -15,14 +15,14 @@
   "compared a file with its previous version and sets the passed in atomic file-cache version to the new verison of the file"
   [file-cache change-list]
   
-  (map
-   (fn [item] (let [new-file-contents (file-to-vector-of-lines item)
-                    diff (file-diff (get-previous-version file-cache item) new-file-contents)]
-
-                (swap! file-cache assoc item new-file-contents)
-                {:filename item :diff diff}))
-
-   @change-list))
+  (doall (map
+          (fn [item] (let [new-file-contents (file-to-vector-of-lines item)
+                           diff (file-diff (get-previous-version file-cache item) new-file-contents)]
+                       
+                       (swap! file-cache assoc item new-file-contents)
+                       {:filename item :diff diff}))
+          
+          @change-list)))
 
 
 (defn format-session-data
