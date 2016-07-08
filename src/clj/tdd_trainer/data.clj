@@ -2,7 +2,7 @@
 
 (def session-data (atom nil))
 
-(def change-list (atom #{}))
+(def change-list (atom {}))
 
 (def file-cache (atom {}))
 
