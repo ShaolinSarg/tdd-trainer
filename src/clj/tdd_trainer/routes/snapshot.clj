@@ -3,7 +3,6 @@
             [tdd-trainer.data :as dta]
             [tdd-trainer.stats.snapshot-stats :refer :all]
             [tdd-trainer.watcher.file-watcher :refer :all]
-            [tdd-trainer.differ.file-differ :refer :all]
             [compojure.core :refer [defroutes POST GET]]
             [ring.util.http-response :as response]
             [clj-time.format :as f]))

@@ -1,6 +1,5 @@
 (ns tdd-trainer.watcher.file-watcher
-  (:require [tdd-trainer.differ.file-differ :refer :all]
-            [tdd-trainer.data :as dta]
+  (:require [tdd-trainer.data :as dta]
             [clojure-watch.core :refer [start-watch]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]))
@@ -24,16 +23,13 @@
 
     (if (some (conj #{} file-ext) file-types-to-watch)
       (let [previous-version (get-latest-from-session session-data file-path)
-            latest-version (file-to-vector-of-lines file-path)
-            previous-diffs (get-in @change-set [file-path :diffs] nil)]
+            latest-version (file-to-vector-of-lines file-path)]
 
 
         (log/info (str "adding previous version: " previous-version))
         (log/info (str "adding latest version: " latest-version))
-        (log/info (str "previous diffs: " previous-diffs))
 
-        (swap! change-set assoc file-path {:latest latest-version
-                                           :diffs (conj previous-diffs (file-diff previous-version latest-version))}))
+        (swap! change-set assoc file-path {:latest latest-version}))
 
       @change-set)))
 
@@ -43,7 +39,9 @@
   [change-set path file-types]
   (start-watch [{:path path
                  :event-types [:create :modify :delete]
-                 ;;:bootstrap (fn [path] (println "Starting to watch " path))
-                 :callback (fn [event filename] (add-file-to-changeset dta/session-data change-set filename file-types))
+                 :bootstrap (fn [path] (log/info "Starting to watch: " path))
+                 :callback (fn [event filename] (do
+                                                  (log/info (str "change in file: " filename))
+                                                  (add-file-to-changeset dta/session-data change-set filename file-types)))
                  :options {:recursive true}}]))
 

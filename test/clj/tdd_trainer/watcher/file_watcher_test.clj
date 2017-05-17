@@ -39,14 +39,13 @@
 (deftest change-file-tests
   (facts "about `add-file-to-changeset`"
     (fact "should add a changed file to the given change-set"
-      (add-file-to-changeset (atom {}) clj-file clojure-files) => {clj-file {:latest ["the first line" "the second line"]
-                                                                             :diffs '(([nil "the first line"] [nil "the second line"]))}}
+      (add-file-to-changeset session-data (atom {}) clj-file clojure-files) => {clj-file {:latest ["the first line" "the second line"]}}
       (provided
        (file-to-vector-of-lines clj-file) => ["the first line" "the second line"]))
 
     (fact "should only add files that are the specified type"
-      (add-file-to-changeset (atom {}) clj-file scala-files) => {}
-      (add-file-to-changeset (atom {}) clj-file clojure-scala-files) => {clj-file {:latest ["the first line" "the second line"] :diffs '(([nil "the first line"] [nil "the second line"]))}}
+      (add-file-to-changeset session-data (atom {}) clj-file scala-files) => {}
+      (add-file-to-changeset session-data (atom {}) clj-file clojure-scala-files) => {clj-file {:latest ["the first line" "the second line"]}}
       (provided
        (file-to-vector-of-lines clj-file) => ["the first line" "the second line"]))))
 

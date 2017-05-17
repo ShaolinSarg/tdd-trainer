@@ -20,9 +20,9 @@
 
 (def session-start (t/date-time 2016 6 6 22 11 00))
 (def snapshots [{:snapshot-timestamp (t/date-time 2016 6 6 22 11 12)}
-            {:snapshot-timestamp (t/date-time 2016 6 6 22 12 12)}
-            {:snapshot-timestamp (t/date-time 2016 6 6 22 12 52)}
-            {:snapshot-timestamp (t/date-time 2016 6 6 22 14 52)}])
+                {:snapshot-timestamp (t/date-time 2016 6 6 22 12 12)}
+                {:snapshot-timestamp (t/date-time 2016 6 6 22 12 52)}
+                {:snapshot-timestamp (t/date-time 2016 6 6 22 14 52)}])
 
 (def session {:session-id 111 :start-time session-start :snapshots snapshots})
 
@@ -44,7 +44,15 @@
   (facts "about 'gen-stat-summary'"
     (fact "should contain the average save time"
       (:average-save-time (gen-stat-summary session)) => 58.0M)
+
     (fact "should return a suitable message for no snapshots"
-      (:average-save-time (gen-stat-summary {:snapshots []})) => "no data")
+      (gen-stat-summary {:snapshots []}) => "no data")
+
     (fact "should contain the sequence of save gaps"
-      (:gaps (gen-stat-summary session)) => [12 60 40 120])))
+      (:gaps (gen-stat-summary session)) => [12 60 40 120])
+
+    (fact "should contain the standard deviation of the gaps"
+      (:standard-deviation (gen-stat-summary session)) => 39.65M)
+    
+    (fact "should return the gaps within one SD of the mean"
+      (:one-sd-gaps (gen-stat-summary session)) => [40 60])))
