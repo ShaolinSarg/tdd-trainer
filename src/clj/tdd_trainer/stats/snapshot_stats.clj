@@ -50,15 +50,27 @@
         sum-diffs (reduce + diffs-squared)
         variance (/ sum-diffs (count gaps))]
     (->> (Math/sqrt variance)
-         (bigdec)
-         (with-precision 2))))
+         (format "%.2f")
+         (bigdec))))
 
 (defn gen-stat-summary
   "generates the map containing all of the required stats"
   [session]
-  (let [start (:start-time session)
-        snapshots (:snapshots session)
-        gaps (snapshot-gaps start snapshots)
-        ave-save-time (average-snapshot-gap gaps)]
-    {:average-save-time ave-save-time
-     :gaps gaps}))
+  (if (= (count (get session :snapshots [])) 0) "no data"
+      (let [start (:start-time session)
+            snapshots (:snapshots session)
+            gaps (snapshot-gaps start snapshots)
+            ave-save-time (average-snapshot-gap gaps)
+            standard-deviation (standard-deviation-gaps gaps)
+            sd-filter (filter
+                       (fn [item] (and
+                                   (>= item (- ave-save-time standard-deviation))
+                                   (<= item (+ ave-save-time standard-deviation))))
+                       gaps)
+            ]
+        {:average-save-time ave-save-time
+         :gaps gaps
+         :standard-deviation standard-deviation
+         :one-sd-gaps sd-filter
+         })
+      ))

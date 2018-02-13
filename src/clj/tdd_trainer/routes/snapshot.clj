@@ -3,26 +3,11 @@
             [tdd-trainer.data :as dta]
             [tdd-trainer.stats.snapshot-stats :refer :all]
             [tdd-trainer.watcher.file-watcher :refer :all]
-            [tdd-trainer.differ.file-differ :refer :all]
             [compojure.core :refer [defroutes POST GET]]
             [ring.util.http-response :as response]
             [clj-time.format :as f]))
 
 (def json-date-formatter (f/formatters :mysql))
-
-
-(defn process-changed-files
-  "compared a file with its previous version and sets the passed in atomic file-cache version to the new verison of the file"
-  [file-cache change-list]
-  
-  (doall (map
-          (fn [item] (let [new-file-contents (file-to-vector-of-lines item)
-                           diff (file-diff (get-previous-version file-cache item) new-file-contents)]
-                       
-                       (swap! file-cache assoc item new-file-contents)
-                       {:filename item :diff diff}))
-          
-          @change-list)))
 
 
 (defn format-session-data
@@ -56,14 +41,13 @@
 
     
   (POST "/session/:session-id/snapshot" [session-id timestamp failingTestCount failingTestNames]
-        (let [snapshot-timestamp (f/parse json-date-formatter timestamp)
-              changed-files (process-changed-files dta/file-cache dta/change-list)]
+        (let [snapshot-timestamp (f/parse json-date-formatter timestamp)]
 
           (dta/update-session-data session-id {:snapshot-timestamp snapshot-timestamp
                                              :failing-test-count failingTestCount
                                              :failing-test-names failingTestNames
-                                             :changed-files changed-files})
-          (reset! dta/change-list #{})
+                                             :changed-files @dta/change-list})
+          (reset! dta/change-list {})
           (response/ok)))
 
 

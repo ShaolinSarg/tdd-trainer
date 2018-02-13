@@ -1,12 +1,11 @@
 (defproject tdd_trainer "0.1.0-SNAPSHOT"
 
-  :description "FIXME: write description"
+  :description "TDD Metrics engine for processing unit test run information"
   :url "http://example.com/FIXME"
 
   :dependencies [[luminus-log4j "0.1.3"]
                  [org.clojure/clojure "1.8.0"]
                  [selmer "1.0.4"]
-                 [markdown-clj "0.9.89"]
                  [ring-middleware-format "0.7.0"]
                  [metosin/ring-http-response "0.6.5"]
                  [bouncer "1.0.0"]
